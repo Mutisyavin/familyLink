@@ -11,6 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Plus, TreePine } from 'lucide-react-native';
 import { router } from 'expo-router';
 import FamilyTreeView from '@/components/FamilyTreeView';
+import CloudSyncStatus from '@/components/CloudSyncStatus';
 import { FamilyMember, TreeNode, TreeConnection } from '@/types/FamilyMember';
 import { StorageService } from '@/utils/storage';
 import { TreeLayoutService } from '@/utils/treeLayout';
@@ -75,9 +76,12 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.titleContainer}>
-          <TreePine size={28} color="#92400E" />
-          <Text style={styles.title}>LegacyLink</Text>
+        <View style={styles.headerTop}>
+          <View style={styles.titleContainer}>
+            <TreePine size={28} color="#92400E" />
+            <Text style={styles.title}>LegacyLink</Text>
+          </View>
+          <CloudSyncStatus />
         </View>
         <Text style={styles.subtitle}>Your family's digital legacy</Text>
       </View>
@@ -122,6 +126,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#FEF3C7',
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   titleContainer: {
     flexDirection: 'row',

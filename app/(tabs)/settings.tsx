@@ -1,164 +1,314 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  ScrollView,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
   Alert,
-  Platform,
+  TextInput,
+  Switch,
 } from 'react-native';
-import { Download, Share, Palette, Shield, CircleHelp as HelpCircle, Heart, ChevronRight } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import CloudSyncStatus from '@/components/CloudSyncStatus';
+import { firebaseService, CollaborationInvite } from '@/utils/firebaseService';
+import { getCurrentTree } from '@/utils/storage';
 
 export default function SettingsScreen() {
-  const handleExportPDF = () => {
+  const [user, setUser] = useState(firebaseService.getCurrentUser());
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<'viewer' | 'editor' | 'admin'>('editor');
+  const [pendingInvites, setPendingInvites] = useState<CollaborationInvite[]>([]);
+  const [autoSync, setAutoSync] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    loadPendingInvites();
+  }, [user]);
+
+  const loadPendingInvites = async () => {
+    if (user?.email) {
+      try {
+        const invites = await firebaseService.getCollaborationInvites(user.email);
+        setPendingInvites(invites);
+      } catch (error) {
+        console.error('Error loading invites:', error);
+      }
+    }
+  };
+
+  const handleSignOut = async () => {
     Alert.alert(
-      'Export as PDF',
-      'This feature will generate a beautiful PDF of your family tree.',
-      [{ text: 'Coming Soon', style: 'default' }]
+      'Sign Out',
+      'Are you sure you want to sign out? Your data will remain on this device.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await firebaseService.signOut();
+              setUser(null);
+              Alert.alert('Success', 'You have been signed out.');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
+            }
+          },
+        },
+      ]
     );
   };
 
-  const handleShareTree = () => {
-    Alert.alert(
-      'Share Family Tree',
-      'Create a shareable link to invite family members to view and contribute to your tree.',
-      [{ text: 'Coming Soon', style: 'default' }]
-    );
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim()) {
+      Alert.alert('Error', 'Please enter an email address.');
+      return;
+    }
+
+    if (!user) {
+      Alert.alert('Error', 'You must be signed in to send invites.');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const currentTree = await getCurrentTree();
+      if (!currentTree) {
+        Alert.alert('Error', 'No family tree found to share.');
+        return;
+      }
+
+      await firebaseService.sendCollaborationInvite(
+        currentTree.id,
+        currentTree.title,
+        inviteEmail.trim(),
+        inviteRole
+      );
+
+      Alert.alert('Success', `Invitation sent to ${inviteEmail}`);
+      setInviteEmail('');
+    } catch (error) {
+      console.error('Error sending invite:', error);
+      Alert.alert('Error', 'Failed to send invitation. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleThemeSettings = () => {
-    Alert.alert(
-      'Tree Themes',
-      'Choose from classic, modern, African-inspired, and animated theme options.',
-      [{ text: 'Coming Soon', style: 'default' }]
-    );
+  const handleInviteResponse = async (inviteId: string, response: 'accepted' | 'declined') => {
+    try {
+      await firebaseService.respondToCollaborationInvite(inviteId, response);
+      
+      Alert.alert(
+        'Success',
+        response === 'accepted' 
+          ? 'You have joined the family tree!' 
+          : 'Invitation declined.'
+      );
+      
+      // Reload invites
+      await loadPendingInvites();
+    } catch (error) {
+      console.error('Error responding to invite:', error);
+      Alert.alert('Error', 'Failed to respond to invitation. Please try again.');
+    }
   };
 
-  const handlePrivacySettings = () => {
-    Alert.alert(
-      'Privacy Settings',
-      'Manage who can see your family tree and control data sharing preferences.',
-      [{ text: 'Coming Soon', style: 'default' }]
-    );
-  };
+  const SettingSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
+    <View style={styles.section}>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {children}
+    </View>
+  );
 
-  const handleHelp = () => {
-    Alert.alert(
-      'Help & Support',
-      'Need help getting started? Access our guide on building beautiful family trees.',
-      [{ text: 'Coming Soon', style: 'default' }]
-    );
-  };
-
-  const handleAbout = () => {
-    Alert.alert(
-      'About LegacyLink',
-      'LegacyLink helps families preserve and celebrate their heritage through beautiful, interactive family trees.\n\nVersion 1.0.0\nBuilt with love for preserving family legacies.',
-      [{ text: 'Close', style: 'default' }]
-    );
-  };
-
-  const settingsOptions = [
-    {
-      icon: Download,
-      title: 'Export Family Tree',
-      subtitle: 'Save as PDF or image',
-      onPress: handleExportPDF,
-    },
-    {
-      icon: Share,
-      title: 'Share with Family',
-      subtitle: 'Invite others to collaborate',
-      onPress: handleShareTree,
-    },
-    {
-      icon: Palette,
-      title: 'Tree Appearance',
-      subtitle: 'Themes and visual options',
-      onPress: handleThemeSettings,
-    },
-    {
-      icon: Shield,
-      title: 'Privacy & Security',
-      subtitle: 'Control your data',
-      onPress: handlePrivacySettings,
-    },
-    {
-      icon: HelpCircle,
-      title: 'Help & Support',
-      subtitle: 'Get help using LegacyLink',
-      onPress: handleHelp,
-    },
-    {
-      icon: Heart,
-      title: 'About LegacyLink',
-      subtitle: 'App info and version',
-      onPress: handleAbout,
-    },
-  ];
+  const SettingItem = ({ 
+    icon, 
+    title, 
+    subtitle, 
+    onPress, 
+    rightElement 
+  }: { 
+    icon: string; 
+    title: string; 
+    subtitle?: string; 
+    onPress?: () => void;
+    rightElement?: React.ReactNode;
+  }) => (
+    <TouchableOpacity style={styles.settingItem} onPress={onPress} disabled={!onPress}>
+      <View style={styles.settingLeft}>
+        <Ionicons name={icon as any} size={20} color="#D2691E" />
+        <View style={styles.settingText}>
+          <Text style={styles.settingTitle}>{title}</Text>
+          {subtitle && <Text style={styles.settingSubtitle}>{subtitle}</Text>}
+        </View>
+      </View>
+      {rightElement || (onPress && <Ionicons name="chevron-forward" size={16} color="#999999" />)}
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Customize your LegacyLink experience</Text>
+        <Text style={styles.headerTitle}>Settings</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>General</Text>
-          {settingsOptions.map((option, index) => {
-            const IconComponent = option.icon;
-            return (
-              <TouchableOpacity
-                key={index}
-                style={styles.settingItem}
-                onPress={option.onPress}
-              >
-                <View style={styles.settingLeft}>
-                  <View style={styles.iconContainer}>
-                    <IconComponent size={20} color="#92400E" />
-                  </View>
-                  <View style={styles.settingText}>
-                    <Text style={styles.settingTitle}>{option.title}</Text>
-                    <Text style={styles.settingSubtitle}>{option.subtitle}</Text>
+        {/* Account Section */}
+        <SettingSection title="Account">
+          {user ? (
+            <>
+              <SettingItem
+                icon="person-circle"
+                title={user.displayName || 'User'}
+                subtitle={user.email || ''}
+              />
+              <SettingItem
+                icon="log-out"
+                title="Sign Out"
+                onPress={handleSignOut}
+              />
+            </>
+          ) : (
+            <SettingItem
+              icon="log-in"
+              title="Sign In"
+              subtitle="Sync your family tree across devices"
+              onPress={() => router.push('/auth')}
+            />
+          )}
+        </SettingSection>
+
+        {/* Cloud Sync Section */}
+        <SettingSection title="Cloud Sync">
+          <CloudSyncStatus showDetails={true} style={styles.syncStatus} />
+          
+          <SettingItem
+            icon="sync"
+            title="Auto Sync"
+            subtitle="Automatically sync changes to the cloud"
+            rightElement={
+              <Switch
+                value={autoSync}
+                onValueChange={setAutoSync}
+                trackColor={{ false: '#E0E0E0', true: '#D2691E' }}
+                thumbColor="#FFFFFF"
+              />
+            }
+          />
+        </SettingSection>
+
+        {/* Collaboration Section */}
+        {user && (
+          <SettingSection title="Collaboration">
+            <View style={styles.inviteContainer}>
+              <Text style={styles.inviteTitle}>Invite Family Members</Text>
+              <Text style={styles.inviteSubtitle}>
+                Share your family tree with relatives so they can contribute photos and stories.
+              </Text>
+              
+              <View style={styles.inviteForm}>
+                <TextInput
+                  style={styles.inviteInput}
+                  placeholder="Enter email address"
+                  value={inviteEmail}
+                  onChangeText={setInviteEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+                
+                <View style={styles.roleSelector}>
+                  <Text style={styles.roleLabel}>Role:</Text>
+                  <View style={styles.roleButtons}>
+                    {(['viewer', 'editor', 'admin'] as const).map((role) => (
+                      <TouchableOpacity
+                        key={role}
+                        style={[
+                          styles.roleButton,
+                          inviteRole === role && styles.selectedRoleButton,
+                        ]}
+                        onPress={() => setInviteRole(role)}
+                      >
+                        <Text
+                          style={[
+                            styles.roleButtonText,
+                            inviteRole === role && styles.selectedRoleButtonText,
+                          ]}
+                        >
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
                   </View>
                 </View>
-                <ChevronRight size={20} color="#A16207" />
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About</Text>
-          <View style={styles.aboutContainer}>
-            <Text style={styles.aboutTitle}>LegacyLink</Text>
-            <Text style={styles.aboutDescription}>
-              Preserving family stories, one photo at a time. LegacyLink helps families 
-              create beautiful, interactive family trees that celebrate their heritage 
-              and connect generations.
-            </Text>
-            <Text style={styles.aboutVersion}>Version 1.0.0</Text>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Coming Soon</Text>
-          <View style={styles.comingSoonContainer}>
-            <Text style={styles.comingSoonTitle}>Future Features</Text>
-            <View style={styles.featureList}>
-              <Text style={styles.featureItem}>• Voice note recordings from elders</Text>
-              <Text style={styles.featureItem}>• Timeline view for family history</Text>
-              <Text style={styles.featureItem}>• AI-generated family biographies</Text>
-              <Text style={styles.featureItem}>• Integration with genealogy databases</Text>
-              <Text style={styles.featureItem}>• Real-time family collaboration</Text>
-              <Text style={styles.featureItem}>• Advanced relationship mapping</Text>
+                
+                <TouchableOpacity
+                  style={[styles.inviteButton, isLoading && styles.inviteButtonDisabled]}
+                  onPress={handleSendInvite}
+                  disabled={isLoading}
+                >
+                  <Ionicons name="mail" size={16} color="#FFFFFF" />
+                  <Text style={styles.inviteButtonText}>
+                    {isLoading ? 'Sending...' : 'Send Invitation'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
+
+            {/* Pending Invites */}
+            {pendingInvites.length > 0 && (
+              <View style={styles.pendingInvites}>
+                <Text style={styles.pendingTitle}>Pending Invitations</Text>
+                {pendingInvites.map((invite) => (
+                  <View key={invite.id} style={styles.inviteCard}>
+                    <View style={styles.inviteInfo}>
+                      <Text style={styles.inviteTreeName}>{invite.treeName}</Text>
+                      <Text style={styles.inviteFrom}>
+                        From: {invite.inviterName} ({invite.inviterEmail})
+                      </Text>
+                      <Text style={styles.inviteRole}>Role: {invite.role}</Text>
+                    </View>
+                    <View style={styles.inviteActions}>
+                      <TouchableOpacity
+                        style={styles.acceptButton}
+                        onPress={() => handleInviteResponse(invite.id, 'accepted')}
+                      >
+                        <Text style={styles.acceptButtonText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.declineButton}
+                        onPress={() => handleInviteResponse(invite.id, 'declined')}
+                      >
+                        <Text style={styles.declineButtonText}>Decline</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+          </SettingSection>
+        )}
+
+        {/* App Info Section */}
+        <SettingSection title="About">
+          <SettingItem
+            icon="information-circle"
+            title="Version"
+            subtitle="1.0.0 (Phase 2)"
+          />
+          <SettingItem
+            icon="help-circle"
+            title="Help & Support"
+            onPress={() => Alert.alert('Help', 'Contact support at help@legacylink.app')}
+          />
+          <SettingItem
+            icon="document-text"
+            title="Privacy Policy"
+            onPress={() => Alert.alert('Privacy', 'Privacy policy coming soon')}
+          />
+        </SettingSection>
       </ScrollView>
     </SafeAreaView>
   );
@@ -177,17 +327,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#FEF3C7',
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#92400E',
+  headerTitle: {
+    fontSize: 24,
     fontFamily: 'Playfair-Bold',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#A16207',
-    marginTop: 4,
-    fontFamily: 'Inter-Regular',
+    color: '#92400E',
   },
   content: {
     flex: 1,
@@ -197,19 +340,17 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 18,
+    fontFamily: 'Inter-SemiBold',
     color: '#92400E',
-    marginBottom: 16,
-    fontFamily: 'Inter-Bold',
+    marginBottom: 12,
   },
   settingItem: {
-    backgroundColor: '#FFFFFF',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
     borderRadius: 12,
     marginBottom: 8,
     borderWidth: 1,
@@ -220,77 +361,174 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FEF3C7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
   settingText: {
+    marginLeft: 12,
     flex: 1,
   },
   settingTitle: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#92400E',
     fontFamily: 'Inter-Medium',
+    color: '#333333',
   },
   settingSubtitle: {
     fontSize: 14,
-    color: '#A16207',
+    fontFamily: 'Inter-Regular',
+    color: '#666666',
     marginTop: 2,
-    fontFamily: 'Inter-Regular',
   },
-  aboutContainer: {
+  syncStatus: {
+    marginBottom: 8,
+  },
+  inviteContainer: {
     backgroundColor: '#FFFFFF',
-    padding: 20,
+    padding: 16,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#FEF3C7',
+    marginBottom: 8,
   },
-  aboutTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#92400E',
-    marginBottom: 12,
-    fontFamily: 'Playfair-Bold',
-  },
-  aboutDescription: {
+  inviteTitle: {
     fontSize: 16,
-    color: '#A16207',
-    lineHeight: 24,
-    marginBottom: 16,
-    fontFamily: 'Inter-Regular',
-  },
-  aboutVersion: {
-    fontSize: 14,
-    color: '#A16207',
-    fontFamily: 'Inter-Regular',
-  },
-  comingSoonContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#FEF3C7',
-  },
-  comingSoonTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#92400E',
-    marginBottom: 12,
     fontFamily: 'Inter-SemiBold',
+    color: '#333333',
+    marginBottom: 4,
   },
-  featureList: {
+  inviteSubtitle: {
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    color: '#666666',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  inviteForm: {
+    gap: 12,
+  },
+  inviteInput: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    fontFamily: 'Inter-Regular',
+    backgroundColor: '#FAFAFA',
+  },
+  roleSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  roleLabel: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#333333',
+  },
+  roleButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    flex: 1,
+  },
+  roleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    backgroundColor: '#FAFAFA',
+    alignItems: 'center',
+  },
+  selectedRoleButton: {
+    borderColor: '#D2691E',
+    backgroundColor: '#FFF8F0',
+  },
+  roleButtonText: {
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+    color: '#666666',
+  },
+  selectedRoleButtonText: {
+    color: '#D2691E',
+  },
+  inviteButton: {
+    backgroundColor: '#D2691E',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 8,
     gap: 8,
   },
-  featureItem: {
+  inviteButtonDisabled: {
+    opacity: 0.6,
+  },
+  inviteButtonText: {
+    color: '#FFFFFF',
     fontSize: 14,
-    color: '#A16207',
-    lineHeight: 20,
+    fontFamily: 'Inter-Medium',
+  },
+  pendingInvites: {
+    marginTop: 16,
+  },
+  pendingTitle: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#333333',
+    marginBottom: 12,
+  },
+  inviteCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#FEF3C7',
+    marginBottom: 8,
+  },
+  inviteInfo: {
+    marginBottom: 12,
+  },
+  inviteTreeName: {
+    fontSize: 16,
+    fontFamily: 'Inter-SemiBold',
+    color: '#333333',
+    marginBottom: 4,
+  },
+  inviteFrom: {
+    fontSize: 14,
     fontFamily: 'Inter-Regular',
+    color: '#666666',
+    marginBottom: 2,
+  },
+  inviteRole: {
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+    color: '#D2691E',
+  },
+  inviteActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: '#10B981',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  acceptButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
+  },
+  declineButton: {
+    flex: 1,
+    backgroundColor: '#EF4444',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  declineButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontFamily: 'Inter-Medium',
   },
 });
