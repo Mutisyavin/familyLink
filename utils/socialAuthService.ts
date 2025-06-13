@@ -1,5 +1,3 @@
-import * as AuthSession from 'expo-auth-session';
-import * as Crypto from 'expo-crypto';
 import * as WebBrowser from 'expo-web-browser';
 import { Platform } from 'react-native';
 
@@ -29,59 +27,28 @@ class SocialAuthService {
   private redirectUri: string;
 
   constructor() {
-    this.redirectUri = AuthSession.makeRedirectUri({
-      scheme: 'legacylink',
-      path: 'auth',
-    });
+    this.redirectUri = 'legacylink://auth';
   }
 
-  // Google OAuth
+  // Google OAuth - Simplified demo version
   async signInWithGoogle(config?: Partial<SocialAuthConfig>): Promise<SocialAuthResult> {
     try {
-      const clientId = config?.clientId || process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID || 'your-google-client-id';
+      // For demo purposes, simulate the OAuth flow
+      console.log('Starting Google OAuth flow...');
       
-      const request = new AuthSession.AuthRequest({
-        clientId,
-        scopes: config?.scopes || ['openid', 'profile', 'email'],
-        redirectUri: config?.redirectUri || this.redirectUri,
-        responseType: AuthSession.ResponseType.Code,
-        codeChallenge: await Crypto.digestStringAsync(
-          Crypto.CryptoDigestAlgorithm.SHA256,
-          'code-challenge',
-          { encoding: Crypto.CryptoEncoding.BASE64URL }
-        ),
-        codeChallengeMethod: AuthSession.CodeChallengeMethod.S256,
-        additionalParameters: {},
-        extraParams: {
-          access_type: 'offline',
-        },
-      });
-
-      const discovery = {
-        authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-        tokenEndpoint: 'https://oauth2.googleapis.com/token',
-        userInfoEndpoint: 'https://www.googleapis.com/oauth2/v2/userinfo',
-      };
-
-      const result = await request.promptAsync(discovery);
-
-      if (result.type === 'success') {
-        // For demo purposes, return mock data
-        return {
-          success: true,
-          user: {
-            id: 'google_' + Date.now(),
-            name: 'Google User',
-            email: 'user@gmail.com',
-            profilePicture: 'https://via.placeholder.com/150',
-            provider: 'google',
-          },
-        };
-      }
-
+      // In a real implementation, this would open a web browser for OAuth
+      // For now, we'll simulate a successful authentication
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       return {
-        success: false,
-        error: 'Authentication was cancelled or failed',
+        success: true,
+        user: {
+          id: 'google_' + Date.now(),
+          name: 'John Doe',
+          email: 'john.doe@gmail.com',
+          profilePicture: 'https://via.placeholder.com/150',
+          provider: 'google',
+        },
       };
     } catch (error) {
       console.error('Google sign-in error:', error);
@@ -92,44 +59,23 @@ class SocialAuthService {
     }
   }
 
-  // Facebook OAuth
+  // Facebook OAuth - Simplified demo version
   async signInWithFacebook(config?: Partial<SocialAuthConfig>): Promise<SocialAuthResult> {
     try {
-      const clientId = config?.clientId || process.env.EXPO_PUBLIC_FACEBOOK_APP_ID || 'your-facebook-app-id';
+      console.log('Starting Facebook OAuth flow...');
       
-      const request = new AuthSession.AuthRequest({
-        clientId,
-        scopes: config?.scopes || ['public_profile', 'email'],
-        redirectUri: config?.redirectUri || this.redirectUri,
-        responseType: AuthSession.ResponseType.Token,
-        extraParams: {
-          display: Platform.OS === 'web' ? 'popup' : 'touch',
-        },
-      });
-
-      const discovery = {
-        authorizationEndpoint: 'https://www.facebook.com/v18.0/dialog/oauth',
-      };
-
-      const result = await request.promptAsync(discovery);
-
-      if (result.type === 'success') {
-        // For demo purposes, return mock data
-        return {
-          success: true,
-          user: {
-            id: 'facebook_' + Date.now(),
-            name: 'Facebook User',
-            email: 'user@facebook.com',
-            profilePicture: 'https://via.placeholder.com/150',
-            provider: 'facebook',
-          },
-        };
-      }
-
+      // Simulate OAuth flow
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       return {
-        success: false,
-        error: 'Facebook authentication was cancelled or failed',
+        success: true,
+        user: {
+          id: 'facebook_' + Date.now(),
+          name: 'Jane Smith',
+          email: 'jane.smith@facebook.com',
+          profilePicture: 'https://via.placeholder.com/150',
+          provider: 'facebook',
+        },
       };
     } catch (error) {
       console.error('Facebook sign-in error:', error);
@@ -140,16 +86,20 @@ class SocialAuthService {
     }
   }
 
-  // Instagram OAuth (using Facebook's Graph API)
+  // Instagram OAuth - Simplified demo version
   async signInWithInstagram(config?: Partial<SocialAuthConfig>): Promise<SocialAuthResult> {
     try {
-      // For demo purposes, return mock data immediately
+      console.log('Starting Instagram OAuth flow...');
+      
+      // Simulate OAuth flow
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       return {
         success: true,
         user: {
           id: 'instagram_' + Date.now(),
-          name: 'Instagram User',
-          email: undefined,
+          name: 'Alex Johnson',
+          email: undefined, // Instagram doesn't always provide email
           profilePicture: 'https://via.placeholder.com/150',
           provider: 'instagram',
         },
@@ -163,16 +113,20 @@ class SocialAuthService {
     }
   }
 
-  // TikTok OAuth
+  // TikTok OAuth - Simplified demo version
   async signInWithTikTok(config?: Partial<SocialAuthConfig>): Promise<SocialAuthResult> {
     try {
-      // For demo purposes, return mock data immediately
+      console.log('Starting TikTok OAuth flow...');
+      
+      // Simulate OAuth flow
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
       return {
         success: true,
         user: {
           id: 'tiktok_' + Date.now(),
-          name: 'TikTok User',
-          email: undefined,
+          name: 'Sam Wilson',
+          email: undefined, // TikTok doesn't provide email
           profilePicture: 'https://via.placeholder.com/150',
           provider: 'tiktok',
         },

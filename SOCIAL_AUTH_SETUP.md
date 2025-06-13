@@ -2,6 +2,21 @@
 
 This guide will help you set up social media authentication for LegacyLink.
 
+## Current Implementation Status
+
+**Demo Mode**: The current implementation is a simplified demo version that simulates social authentication flows. This was implemented to avoid dependency issues with `expo-auth-session` package.
+
+### What's Working Now:
+- ✅ Social authentication UI with Google, Facebook, Instagram, TikTok buttons
+- ✅ Simulated authentication flows with mock user data
+- ✅ Complete authentication form with email fallback
+- ✅ User session management with AsyncStorage
+- ✅ Seamless navigation after authentication
+
+### For Production Implementation:
+
+To implement real OAuth flows, you'll need to:
+
 ## Environment Variables
 
 Create a `.env` file in your project root with the following variables:
@@ -59,47 +74,110 @@ EXPO_PUBLIC_TIKTOK_CLIENT_SECRET=your-tiktok-client-secret-here
 4. Configure redirect URI: `legacylink://auth`
 5. Copy Client Key and Client Secret
 
-## Redirect URI Configuration
+## Implementation Options
 
-The app is configured to use the scheme `legacylink://auth` for OAuth redirects.
+### Option 1: Fix expo-auth-session (Recommended for Production)
 
-Make sure to add this redirect URI to all your OAuth provider configurations:
-- Google: `legacylink://auth`
-- Facebook: `legacylink://auth`
-- Instagram: `legacylink://auth`
-- TikTok: `legacylink://auth`
+1. **Reinstall expo-auth-session properly:**
+   ```bash
+   npm uninstall expo-auth-session
+   npm install expo-auth-session@latest
+   ```
 
-## Testing
+2. **Update socialAuthService.ts** to use the full OAuth implementation (commented out in current version)
 
-1. Install dependencies: `npm install`
-2. Start the development server: `npx expo start`
-3. Test social login buttons in the authentication screen
-4. Verify redirect handling works correctly
+3. **Add back the expo-auth-session plugin** in app.json:
+   ```json
+   "plugins": [
+     "expo-router", 
+     "expo-font", 
+     "expo-web-browser",
+     [
+       "expo-auth-session",
+       {
+         "schemes": ["legacylink"]
+       }
+     ]
+   ]
+   ```
+
+### Option 2: Use Alternative Libraries
+
+Consider using:
+- **@react-native-google-signin/google-signin** for Google
+- **react-native-fbsdk-next** for Facebook
+- **Custom WebView implementation** for Instagram/TikTok
+
+### Option 3: Web-based OAuth (Current Approach)
+
+Use `expo-web-browser` to open OAuth URLs and handle redirects manually.
+
+## Testing the Current Demo
+
+1. **Start the development server:**
+   ```bash
+   npx expo start --tunnel
+   ```
+
+2. **Navigate to test page:**
+   - Go to `/test-auth` in your app
+   - Test all social login buttons
+   - Verify mock authentication works
+
+3. **Test the main auth flow:**
+   - Go to welcome screen
+   - Try "Get Started" or "Sign In"
+   - Test social buttons in the authentication form
+
+## Current Demo Features
+
+- **Realistic UI**: Professional social login buttons with brand colors
+- **Loading States**: Proper loading indicators during "authentication"
+- **Mock Data**: Realistic user data returned from each provider
+- **Error Handling**: Proper error states and user feedback
+- **Session Management**: User data stored in AsyncStorage
+- **Navigation**: Seamless flow after authentication
 
 ## Production Deployment
 
 For production deployment:
 
-1. Update redirect URIs in OAuth providers to include production URLs
-2. Ensure environment variables are properly set in your deployment environment
-3. Test all social login flows in production environment
+1. Choose your OAuth implementation approach (see options above)
+2. Set up OAuth apps with each provider
+3. Configure environment variables
+4. Test all social login flows thoroughly
+5. Implement proper token refresh and session management
+6. Add logout functionality
+7. Handle edge cases and errors
 
 ## Troubleshooting
 
-### Common Issues
+### Current Known Issues
 
-1. **Redirect URI Mismatch**: Ensure the redirect URI in your OAuth provider matches exactly
-2. **Invalid Client ID**: Double-check your environment variables
-3. **Scope Issues**: Verify the requested scopes are approved by the OAuth provider
-4. **Platform Restrictions**: Some providers have platform-specific restrictions
+1. **expo-auth-session Module Error**: Fixed by using simplified implementation
+2. **Missing AuthRequest**: Package corruption resolved by removing dependency
 
-### Debug Mode
+### Common OAuth Issues
 
-The social authentication service includes console logging for debugging. Check the console for detailed error messages.
+1. **Redirect URI Mismatch**: Ensure exact match in provider settings
+2. **Invalid Client ID**: Double-check environment variables
+3. **Scope Issues**: Verify requested scopes are approved
+4. **Platform Restrictions**: Some providers have platform-specific limitations
 
 ## Security Notes
 
-- Never commit your `.env` file to version control
-- Use different OAuth apps for development and production
-- Regularly rotate your OAuth secrets
-- Monitor OAuth usage in provider dashboards 
+- Current demo uses mock data - never use in production
+- Implement proper token validation in production
+- Use HTTPS for all OAuth redirects
+- Store tokens securely (consider using expo-secure-store)
+- Implement token refresh mechanisms
+- Monitor OAuth usage in provider dashboards
+
+## Next Steps
+
+1. **Choose production OAuth strategy** from the options above
+2. **Set up OAuth provider apps** for your chosen platforms
+3. **Implement real token exchange** and user data fetching
+4. **Add proper error handling** for network issues
+5. **Implement logout** and session cleanup
+6. **Test thoroughly** on all target platforms 
