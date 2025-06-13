@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Plus, Users, Settings, Calendar, GitBranch, Search } from 'lucide-react-native';
+import { Chrome as Home, Plus, Users, Settings, Calendar, GitBranch, Search, Share } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -47,6 +47,15 @@ export default function TabLayout() {
           title: 'Add Member',
           tabBarIcon: ({ size, color }) => (
             <Plus size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="export"
+        options={{
+          title: 'Export',
+          tabBarIcon: ({ size, color }) => (
+            <Share size={size} color={color} />
           ),
         }}
       />
