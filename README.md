@@ -1,62 +1,50 @@
-# 🌳 LegacyLink - Family Heritage App
+# 🌳 LegacyLink - Family Tree App
 
-**A photo-first, privacy-focused family tree application built with React Native and Expo**
+**A photo-first, privacy-focused family tree application with African-inspired design**
 
-[![Expo](https://img.shields.io/badge/Expo-SDK%2053-blue.svg)](https://expo.dev/)
-[![React Native](https://img.shields.io/badge/React%20Native-0.79.1-green.svg)](https://reactnative.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue.svg)](https://www.typescriptlang.org/)
-
-## 🎯 Overview
-
-LegacyLink is a secure and intelligent family tree app that enables users to:
-- 📸 **Photo-first design** - Beautiful visual family trees with member photos
-- 🔐 **Privacy-focused** - Secure authentication and family-only access
-- 🧠 **Smart relationships** - Automatic kinship mapping based on gender and family structure
-- 🎨 **African-inspired UI** - Warm color palette with Inter & Playfair Display fonts
-- 📱 **Mobile-first** - Optimized for iOS and Android with web support
+LegacyLink is a modern React Native/Expo family tree app that helps you preserve and share your family's stories through photos, voice recordings, and rich biographical information.
 
 ## ✨ Features
 
-### Phase 1.5 (Current) ✅
-- **User Authentication System**
-  - Email/password and social media login options
-  - Secure user account management
-  - Welcome and onboarding flow
+### 📱 Core Functionality
+- **Photo-First Design**: Visual family tree with profile photos
+- **Voice Stories**: Record and preserve family stories with voice notes
+- **Rich Biographies**: Detailed family member profiles with AI-generated biographies
+- **Relationship Mapping**: Advanced relationship visualization and management
+- **Media Galleries**: Comprehensive photo, video, and document storage
 
-- **Smart Kinship Mapping**
-  - Gender-aware relationship labeling
-  - Automatic detection of family relationships
-  - Extended family support (grandparents, aunts, uncles, in-laws)
+### 🔍 Advanced Search & Discovery
+- **Smart Search**: Intelligent search with relevance scoring
+- **Advanced Filtering**: Filter by gender, living status, media presence
+- **Family Insights**: AI-powered suggestions for missing information
+- **Connection Discovery**: Find isolated family members and suggest connections
 
-- **Tree Privacy & Security**
-  - User-owned family trees
-  - Authentication required for access
-  - Collaborative structure ready
+### 📤 Export & Sharing
+- **PDF Generation**: Professional family tree documents with multiple layouts
+- **Data Backup**: Complete JSON export for data portability
+- **Image Export**: High-quality family tree images
+- **Multiple Formats**: Tree, list, and timeline layouts
+- **Sharing Options**: Built-in sharing with future social media integration
 
-- **Enhanced Member Profiles**
-  - Photo upload functionality
-  - Comprehensive member information
-  - Social media integration
+### 🔐 Privacy & Security
+- **Local Storage**: All data stored locally on device
+- **No Cloud Dependency**: Works completely offline
+- **Secure Backups**: Encrypted data export options
+- **Privacy-First**: No tracking or data collection
 
-### Phase 2 (Upcoming) 🚧
-- 🎤 Voice notes for family members
-- 🧠 AI-powered biography generation
-- 🗓 Timeline view of family events
-- ☁️ Cloud synchronization with Firebase
+### 🎨 Design & UX
+- **African-Inspired UI**: Warm color palette (#D2691E, #8B4513, #FFFBEB)
+- **Modern Typography**: Inter and Playfair Display fonts
+- **Responsive Design**: Optimized for mobile devices
+- **Intuitive Navigation**: Tab-based navigation with clear iconography
 
-### Phase 3 (Planned) 📋
-- 👥 Multi-user collaboration
-- 🔗 Family tree sharing and invitations
-- 📊 Advanced family analytics
-- 🎨 Custom themes and layouts
-
-## 🚀 Quick Start
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js (v16 or higher)
 - npm or yarn
-- Expo CLI (`npm install -g @expo/cli`)
-- Expo Go app on your mobile device
+- Expo CLI
+- iOS Simulator or Android Emulator (for testing)
 
 ### Installation
 
@@ -73,144 +61,245 @@ LegacyLink is a secure and intelligent family tree app that enables users to:
 
 3. **Start the development server**
    ```bash
-   npx expo start --tunnel
+   npx expo start
    ```
 
-4. **Run on your device**
-   - Install Expo Go on your phone
-   - Scan the QR code displayed in the terminal
-   - Or use the tunnel URL directly in Expo Go
+4. **Run on device/simulator**
+   - Scan QR code with Expo Go app (mobile)
+   - Press `i` for iOS simulator
+   - Press `a` for Android emulator
+   - Press `w` for web browser
 
-## 📱 App Flow
-
-1. **Welcome Screen** - Choose to create new tree or join existing
-2. **Authentication** - Sign up/login with email or social media
-3. **Create Founder** - Add yourself as the first family member
-4. **Family Tree** - View, add, and manage family members
-5. **Member Profiles** - Detailed information with photos and relationships
-
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```
-├── app/                          # Expo Router pages
-│   ├── (tabs)/                   # Main app tabs
-│   │   ├── index.tsx            # Family tree view
-│   │   ├── add.tsx              # Add family member
-│   │   ├── members.tsx          # Member list
-│   │   └── settings.tsx         # App settings
-│   ├── onboarding/              # Onboarding screens
-│   │   └── create-founder.tsx   # Create founder profile
-│   ├── welcome.tsx              # Welcome screen
-│   ├── auth.tsx                 # Authentication
-│   └── index.tsx                # App entry point
-├── components/                   # Reusable components
-│   ├── AuthForm.tsx             # Authentication form
-│   ├── FamilyTreeView.tsx       # SVG tree visualization
-│   ├── PhotoUpload.tsx          # Photo upload component
-│   └── SocialMediaInput.tsx     # Social media inputs
-├── types/                       # TypeScript definitions
-│   └── FamilyMember.ts          # Data models
-├── utils/                       # Utility functions
-│   ├── storage.ts               # AsyncStorage helpers
-│   ├── treeLayout.ts            # Tree positioning logic
-│   └── kinshipMapping.ts        # Relationship mapping
-└── assets/                      # Images and fonts
+project/
+├── app/                    # App screens and navigation
+│   ├── (tabs)/            # Tab-based screens
+│   │   ├── index.tsx      # Home/Tree view
+│   │   ├── search.tsx     # Search & Discovery
+│   │   ├── export.tsx     # Export & Sharing
+│   │   ├── add.tsx        # Add Member
+│   │   ├── members.tsx    # Member List
+│   │   ├── timeline.tsx   # Timeline View
+│   │   ├── relationships.tsx # Relationship Mapping
+│   │   └── settings.tsx   # Settings
+│   └── _layout.tsx        # Root layout
+├── components/            # Reusable components
+│   ├── ExportShare.tsx    # Export & sharing modal
+│   ├── FamilyDiscovery.tsx # Smart insights
+│   ├── RelationshipMapper.tsx # SVG relationship visualization
+│   ├── MediaGallery.tsx   # Media management
+│   ├── VoiceRecorder.tsx  # Voice note recording
+│   ├── AIBiographyGenerator.tsx # AI biography generation
+│   └── ...
+├── types/                 # TypeScript type definitions
+│   └── FamilyMember.ts    # Core data types
+├── utils/                 # Utility functions
+│   ├── exportService.ts   # Export functionality
+│   ├── aiService.ts       # AI integration
+│   └── ...
+└── constants/             # App constants and configuration
 ```
+
+## 🛠 Technology Stack
+
+### Frontend
+- **React Native**: Cross-platform mobile development
+- **Expo**: Development platform and build tools
+- **TypeScript**: Type-safe JavaScript
+- **React Navigation**: Navigation library
+
+### Storage & Data
+- **AsyncStorage**: Local data persistence
+- **Firebase**: Cloud sync and real-time collaboration
+- **Expo FileSystem**: File management
+
+### Media & Export
+- **Expo Camera**: Photo capture
+- **Expo AV**: Audio recording and playback
+- **Expo Print**: PDF generation
+- **Expo Sharing**: File sharing capabilities
+- **React Native View Shot**: Screenshot capture
+
+### AI & Services
+- **OpenAI API**: AI biography generation
+- **Expo Speech**: Text-to-speech functionality
+
+### UI & Design
+- **Lucide React Native**: Modern icon library
+- **React Native SVG**: Vector graphics
+- **Expo Linear Gradient**: Gradient backgrounds
+- **Expo Blur**: Blur effects
+
+## 📋 Development Phases
+
+### ✅ Phase 1.5: Authentication & Onboarding
+- User authentication system
+- Welcome screens and onboarding flow
+- Founder creation and kinship mapping
+- Gender selection and basic profile setup
+
+### ✅ Phase 2: Voice Stories & Timeline
+- Voice recording and playback
+- Timeline view for chronological family history
+- AI biography generation with OpenAI integration
+- Firebase cloud sync and real-time collaboration
+
+### ✅ Phase 3: Advanced Relationship Mapping
+- SVG-based relationship visualization
+- Interactive family tree with zoom and pan
+- Complex relationship handling (marriages, adoptions)
+- Visual connection indicators
+
+### ✅ Phase 4: Enhanced Media Management
+- Comprehensive media gallery
+- Photo, video, and document support
+- Media categorization and tagging
+- Bulk media operations
+
+### ✅ Phase 5: Advanced Search & Discovery
+- Smart search with relevance scoring
+- Advanced filtering and suggestions
+- Family insights and missing information detection
+- Connection recommendations
+
+### ✅ Phase 6: Export & Sharing
+- PDF family tree generation
+- Multiple export formats and layouts
+- Data backup and restore
+- Sharing capabilities and social features
+
+## 🎯 Key Features by Screen
+
+### 🏠 Home/Tree View
+- Visual family tree display
+- Photo-based member cards
+- Quick navigation to member details
+- Family statistics overview
+
+### 🔍 Search & Discovery
+- Real-time search with suggestions
+- Advanced filtering options
+- Smart insights and recommendations
+- Recent search history
+
+### 📤 Export & Sharing
+- PDF generation with custom layouts
+- Data backup and restore
+- Image export capabilities
+- Sharing options and collaboration tools
+
+### ➕ Add Member
+- Comprehensive member creation form
+- Photo capture and selection
+- Relationship establishment
+- Voice note recording
+
+### 👥 Members List
+- Alphabetical member listing
+- Quick search and filtering
+- Bulk operations
+- Member statistics
+
+### 📅 Timeline
+- Chronological family history
+- Birth and death date visualization
+- Life event tracking
+- Historical context
+
+### 🔗 Relationships
+- Advanced relationship mapping
+- Visual connection editor
+- Relationship type management
+- Family tree validation
+
+### ⚙️ Settings
+- App preferences and configuration
+- Data management options
+- Privacy settings
+- Export/import tools
 
 ## 🎨 Design System
 
-### Color Palette (African-inspired)
-- **Primary**: `#D2691E` (Chocolate)
-- **Secondary**: `#8B4513` (Saddle Brown)
-- **Background**: `#FFFBEB` (Warm White)
-- **Accent**: `#FEF3C7` (Light Amber)
+### Color Palette
+- **Primary**: #D2691E (Chocolate)
+- **Secondary**: #8B4513 (Saddle Brown)
+- **Background**: #FFFBEB (Warm White)
+- **Accent**: #FEF3C7 (Amber Light)
+- **Text**: #333333 (Dark Gray)
 
 ### Typography
 - **Headers**: Playfair Display (serif)
 - **Body**: Inter (sans-serif)
-- **Weights**: Regular, Medium, SemiBold, Bold
+- **Weights**: Regular (400), Medium (500), SemiBold (600), Bold (700)
 
-## 🔧 Development
+### Components
+- **Cards**: Rounded corners (12px), subtle shadows
+- **Buttons**: Consistent padding, clear hierarchy
+- **Icons**: Lucide React Native, 24px standard size
+- **Spacing**: 8px grid system
 
-### Key Technologies
-- **Frontend**: React Native with Expo
-- **Navigation**: Expo Router
-- **State Management**: React hooks + AsyncStorage
-- **UI Components**: Custom design system
-- **Type Safety**: TypeScript
-- **Storage**: AsyncStorage (Phase 1), Firebase (Phase 2)
+## 🔧 Configuration
 
-### Smart Kinship System
-The app automatically determines family relationships based on:
-- **Direct relationships**: Parent, child, spouse, sibling
-- **Extended family**: Grandparents, aunts, uncles, cousins
-- **In-laws**: All marriage-related connections
-- **Gender-aware labeling**: Father/Mother, Uncle/Aunt, etc.
+### Environment Variables
+Create a `.env` file in the root directory:
 
-### Data Models
-```typescript
-interface FamilyMember {
-  id: string;
-  name: string;
-  gender: "male" | "female" | "other";
-  photoUri?: string;
-  relationships: {
-    parents: string[];
-    siblings: string[];
-    spouses: string[];
-    children: string[];
-  };
-  // ... additional fields
-}
+```env
+OPENAI_API_KEY=your_openai_api_key
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+FIREBASE_PROJECT_ID=your_firebase_project_id
 ```
 
-## 🧪 Testing
+### Firebase Setup
+1. Create a Firebase project
+2. Enable Authentication and Firestore
+3. Add your configuration to the environment variables
+4. Set up security rules for data access
 
-### Manual Testing Checklist
-- [ ] Welcome screen displays correctly
-- [ ] Authentication flow works
-- [ ] Founder creation completes successfully
-- [ ] Family tree renders properly
-- [ ] Member addition with gender selection
-- [ ] Photo upload functionality
-- [ ] Relationship mapping accuracy
+### OpenAI Setup
+1. Create an OpenAI account
+2. Generate an API key
+3. Add the key to your environment variables
+4. Configure usage limits and monitoring
 
-### Running Tests
-```bash
-# Run type checking
-npx tsc --noEmit
+## 📱 Platform Support
 
-# Run linting
-npx expo lint
-```
+### iOS
+- iOS 13.0 and above
+- iPhone and iPad support
+- Native iOS sharing integration
+- Camera and photo library access
 
-## 📈 Roadmap
+### Android
+- Android 6.0 (API level 23) and above
+- Phone and tablet support
+- Android sharing integration
+- Camera and storage permissions
 
-### Phase 2 (July 16 - Aug 10)
-- [ ] Firebase integration for cloud storage
-- [ ] Voice notes recording and playback
-- [ ] AI biography generation with OpenAI
-- [ ] Timeline view of family events
-
-### Phase 3 (Aug 11 - Sept 5)
-- [ ] Multi-user collaboration
-- [ ] Real-time synchronization
-- [ ] Family tree sharing via QR codes
-- [ ] Role-based permissions (Admin, Editor, Viewer)
-
-### Phase 4 (Sept 6 - Oct 5)
-- [ ] Export features (PDF, image)
-- [ ] Additional themes and customization
-- [ ] Advanced search and filtering
-- [ ] Family statistics and insights
+### Web (Expo Web)
+- Modern browsers (Chrome, Firefox, Safari, Edge)
+- Responsive design for desktop and mobile
+- Limited camera functionality
+- File download for exports
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions to LegacyLink! Please follow these guidelines:
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Commit your changes**: `git commit -m 'Add amazing feature'`
+4. **Push to the branch**: `git push origin feature/amazing-feature`
+5. **Open a Pull Request**
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Use consistent naming conventions
+- Add proper error handling
+- Include unit tests for new features
+- Update documentation as needed
 
 ## 📄 License
 
@@ -218,14 +307,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- African design inspiration for color palette and UI elements
-- Expo team for the excellent development platform
-- React Native community for components and libraries
+- **Expo Team**: For the excellent development platform
+- **React Native Community**: For the robust ecosystem
+- **OpenAI**: For AI-powered biography generation
+- **Lucide**: For the beautiful icon library
+- **African Design Inspiration**: For the warm, welcoming aesthetic
 
 ## 📞 Support
 
-For support, email [your-email@example.com] or create an issue in this repository.
+For support, questions, or feature requests:
+
+- **GitHub Issues**: [Create an issue](https://github.com/Mutisyavin/familyLink/issues)
+- **Email**: support@legacylink.app
+- **Documentation**: [Wiki](https://github.com/Mutisyavin/familyLink/wiki)
+
+## 🗺 Roadmap
+
+### Future Enhancements
+- **Real-time Collaboration**: Live editing with family members
+- **Advanced AI Features**: Smart relationship detection, photo tagging
+- **Social Features**: Family group chats, event planning
+- **Historical Integration**: Connect with historical records and databases
+- **Mobile App Store**: Native iOS and Android app distribution
+- **Premium Features**: Advanced export options, cloud storage, family websites
 
 ---
 
-**Built with ❤️ for preserving family heritage and connecting generations**
+**LegacyLink** - *Preserving family stories, one connection at a time* 🌳
