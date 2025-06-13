@@ -16,6 +16,7 @@ import { Save, ArrowLeft } from 'lucide-react-native';
 import PhotoUpload from '@/components/PhotoUpload';
 import SocialMediaInput from '@/components/SocialMediaInput';
 import VoiceRecorder from '@/components/VoiceRecorder';
+import AIBiographyGenerator from '@/components/AIBiographyGenerator';
 import { FamilyMember, SocialMediaProfiles } from '@/types/FamilyMember';
 import { StorageService, getCurrentTree, storeFamilyTree } from '@/utils/storage';
 import { suggestRelationships } from '@/utils/kinshipMapping';
@@ -255,6 +256,15 @@ export default function AddMemberScreen() {
                 textAlignVertical="top"
               />
             </View>
+
+            {/* AI Biography Generator */}
+            <AIBiographyGenerator
+              member={formData as FamilyMember}
+              allMembers={existingMembers}
+              currentBiography={formData.biography}
+              onBiographyGenerated={(biography) => updateField('biography', biography)}
+              style={styles.aiGenerator}
+            />
           </View>
 
           <SocialMediaInput
@@ -410,5 +420,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     fontFamily: 'Inter-SemiBold',
+  },
+  aiGenerator: {
+    marginTop: 16,
   },
 });

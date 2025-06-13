@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import PhotoUpload from '@/components/PhotoUpload';
 import VoiceRecorder from '@/components/VoiceRecorder';
+import AIBiographyGenerator from '@/components/AIBiographyGenerator';
 import { FamilyMember, FamilyTree, UserAccount } from '@/types/FamilyMember';
 import { getUserData, storeFamilyTree, setCurrentTree } from '@/utils/storage';
 
@@ -23,6 +24,7 @@ export default function CreateFounderScreen() {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [birthPlace, setBirthPlace] = useState('');
   const [occupation, setOccupation] = useState('');
+  const [biography, setBiography] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>();
   const [voiceNoteUri, setVoiceNoteUri] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
@@ -52,7 +54,7 @@ export default function CreateFounderScreen() {
         dateOfBirth: dateOfBirth || undefined,
         birthPlace: birthPlace || undefined,
         occupation: occupation || undefined,
-        biography: `Founder of the ${name.split(' ')[0]} family tree on LegacyLink.`,
+        biography: biography || `Founder of the ${name.split(' ')[0]} family tree on LegacyLink.`,
         socialMedia: {},
         relationships: {
           parents: [],
@@ -190,16 +192,50 @@ export default function CreateFounderScreen() {
               placeholder="Your profession or job title"
               autoCapitalize="words"
             />
-                      </View>
+          </View>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Voice Note (Optional)</Text>
-              <VoiceRecorder
-                existingVoiceUri={voiceNoteUri}
-                onVoiceRecorded={setVoiceNoteUri}
-                onVoiceRemoved={() => setVoiceNoteUri(undefined)}
-              />
-            </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Biography</Text>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              value={biography}
+              onChangeText={setBiography}
+              placeholder="Tell your story, achievements, memories..."
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
+
+          {/* AI Biography Generator */}
+          <AIBiographyGenerator
+            member={{
+              id: 'temp',
+              name,
+              gender,
+              dateOfBirth,
+              birthPlace,
+              occupation,
+              biography,
+              socialMedia: {},
+              relationships: { parents: [], siblings: [], spouses: [], children: [] },
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            }}
+            allMembers={[]}
+            currentBiography={biography}
+            onBiographyGenerated={setBiography}
+            style={styles.aiGenerator}
+          />
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Voice Note (Optional)</Text>
+            <VoiceRecorder
+              existingVoiceUri={voiceNoteUri}
+              onVoiceRecorded={setVoiceNoteUri}
+              onVoiceRemoved={() => setVoiceNoteUri(undefined)}
+            />
+          </View>
           </View>
         </ScrollView>
 
@@ -343,5 +379,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontFamily: 'Inter-SemiBold',
+  },
+  textArea: {
+    height: 100,
+    paddingTop: 16,
+  },
+  aiGenerator: {
+    marginBottom: 24,
   },
 }); 
