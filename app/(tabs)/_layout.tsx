@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Plus, Users, Settings, Calendar } from 'lucide-react-native';
+import { Chrome as Home, Plus, Users, Settings, Calendar, GitBranch } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -56,6 +56,15 @@ export default function TabLayout() {
           title: 'Timeline',
           tabBarIcon: ({ size, color }) => (
             <Calendar size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="relationships"
+        options={{
+          title: 'Relations',
+          tabBarIcon: ({ size, color }) => (
+            <GitBranch size={size} color={color} />
           ),
         }}
       />
