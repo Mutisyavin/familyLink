@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 import { Save, ArrowLeft } from 'lucide-react-native';
 import PhotoUpload from '@/components/PhotoUpload';
 import SocialMediaInput from '@/components/SocialMediaInput';
+import VoiceRecorder from '@/components/VoiceRecorder';
 import { FamilyMember, SocialMediaProfiles } from '@/types/FamilyMember';
 import { StorageService, getCurrentTree, storeFamilyTree } from '@/utils/storage';
 import { suggestRelationships } from '@/utils/kinshipMapping';
@@ -260,6 +261,15 @@ export default function AddMemberScreen() {
             socialMedia={formData.socialMedia || {}}
             onUpdate={updateSocialMedia}
           />
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Voice Note</Text>
+            <VoiceRecorder
+              existingVoiceUri={formData.voiceNoteUri}
+              onVoiceRecorded={(uri) => updateField('voiceNoteUri', uri)}
+              onVoiceRemoved={() => updateField('voiceNoteUri', undefined)}
+            />
+          </View>
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity

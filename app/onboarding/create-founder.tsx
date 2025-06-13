@@ -13,6 +13,7 @@ import {
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import PhotoUpload from '@/components/PhotoUpload';
+import VoiceRecorder from '@/components/VoiceRecorder';
 import { FamilyMember, FamilyTree, UserAccount } from '@/types/FamilyMember';
 import { getUserData, storeFamilyTree, setCurrentTree } from '@/utils/storage';
 
@@ -23,6 +24,7 @@ export default function CreateFounderScreen() {
   const [birthPlace, setBirthPlace] = useState('');
   const [occupation, setOccupation] = useState('');
   const [photoUri, setPhotoUri] = useState<string | undefined>();
+  const [voiceNoteUri, setVoiceNoteUri] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
 
   const handleCreateFounder = async () => {
@@ -58,6 +60,7 @@ export default function CreateFounderScreen() {
           spouses: [],
           children: [],
         },
+        voiceNoteUri,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
@@ -187,11 +190,20 @@ export default function CreateFounderScreen() {
               placeholder="Your profession or job title"
               autoCapitalize="words"
             />
-          </View>
-        </View>
-      </ScrollView>
+                      </View>
 
-      <View style={styles.footer}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Voice Note (Optional)</Text>
+              <VoiceRecorder
+                existingVoiceUri={voiceNoteUri}
+                onVoiceRecorded={setVoiceNoteUri}
+                onVoiceRemoved={() => setVoiceNoteUri(undefined)}
+              />
+            </View>
+          </View>
+        </ScrollView>
+
+        <View style={styles.footer}>
         <TouchableOpacity
           style={[styles.createButton, loading && styles.disabledButton]}
           onPress={handleCreateFounder}
