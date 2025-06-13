@@ -6,6 +6,18 @@ export interface SocialMediaProfiles {
   tiktok?: string;
 }
 
+export interface MediaItem {
+  id: string;
+  type: 'photo' | 'video' | 'document';
+  uri: string;
+  name: string;
+  size?: number;
+  mimeType?: string;
+  thumbnail?: string;
+  createdAt: string;
+  description?: string;
+}
+
 export interface FamilyMember {
   id: string;
   name: string;
@@ -17,6 +29,7 @@ export interface FamilyMember {
   occupation?: string;
   biography?: string;
   socialMedia: SocialMediaProfiles;
+  mediaItems?: MediaItem[];
   relationships: {
     parents: string[];
     siblings: string[];

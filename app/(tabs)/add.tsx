@@ -17,7 +17,8 @@ import PhotoUpload from '@/components/PhotoUpload';
 import SocialMediaInput from '@/components/SocialMediaInput';
 import VoiceRecorder from '@/components/VoiceRecorder';
 import AIBiographyGenerator from '@/components/AIBiographyGenerator';
-import { FamilyMember, SocialMediaProfiles } from '@/types/FamilyMember';
+import MediaGallery from '@/components/MediaGallery';
+import { FamilyMember, SocialMediaProfiles, MediaItem } from '@/types/FamilyMember';
 import { StorageService, getCurrentTree, storeFamilyTree } from '@/utils/storage';
 import { suggestRelationships } from '@/utils/kinshipMapping';
 
@@ -40,6 +41,7 @@ export default function AddMemberScreen() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingMembers, setExistingMembers] = useState<FamilyMember[]>([]);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
   useEffect(() => {
     loadExistingMembers();
@@ -83,6 +85,7 @@ export default function AddMemberScreen() {
         occupation: formData.occupation,
         biography: formData.biography,
         socialMedia: formData.socialMedia || {},
+        mediaItems: mediaItems,
         relationships: formData.relationships || {
           parents: [],
           siblings: [],
@@ -129,6 +132,7 @@ export default function AddMemberScreen() {
                   children: [],
                 },
               });
+              setMediaItems([]);
             },
           },
           {
@@ -278,6 +282,17 @@ export default function AddMemberScreen() {
               existingVoiceUri={formData.voiceNoteUri}
               onVoiceRecorded={(uri) => updateField('voiceNoteUri', uri)}
               onVoiceRemoved={() => updateField('voiceNoteUri', undefined)}
+            />
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Media Gallery</Text>
+            <MediaGallery
+              memberId={formData.name || 'new-member'}
+              mediaItems={mediaItems}
+              onMediaUpdate={setMediaItems}
+              maxItems={10}
+              allowedTypes={['photo', 'video', 'document']}
             />
           </View>
 
